@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CJ RYU LORA MONITORING DEMO</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+        }
+        .data-container {
+            width: 45%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            max-height: 200px; /* 최대 높이 설정 */
+        }
+        .graph-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        canvas {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>MONITORING DEMO</h1>
+    </div>
+    <div class="container">
+        <div class="data-container">
+            <h2>ID = 160</h2>
+            <ul id="left-data">
+                {% for item in data %}
+                    {% if item.data.id == 160 %}
+                        <li>{{ item.timestamp }} - {{ item.data }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="data-container">
+            <h2>ID = 176</h2>
+            <ul id="right-data">
+                {% for item in data %}
+                    {% if item.data.id == 176 %}
+                        <li>{{ item.timestamp }} - {{ item.data }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="data-container">
+            <h2>ID = 192</h2>
+            <ul id="right-data">
+                {% for item in data %}
+                    {% if item.data.id == 192 %}
+                        <li>{{ item.timestamp }} - {{ item.data }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container graph-container">
+        <div>
+            <h2>ID = 160 Graph</h2>
+            <canvas id="tempChart160" width="400" height="200"></canvas>
+            <canvas id="humdChart160" width="400" height="200"></canvas>
+        </div>
+        <div>
+            <h2>ID = 176 Graph</h2>
+            <canvas id="tempChart176" width="400" height="200"></canvas>
+            <canvas id="humdChart176" width="400" height="200"></canvas>
+        </div>
+        <div>
+            <h2>ID = 192 Graph</h2>
+            <canvas id="tempChart192" width="400" height="200"></canvas>
+            <canvas id="humdChart192" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // 그래프 생성 스크립트
+        function createChart(ctx, label, backgroundColor, borderColor) {
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: label,
+                        data: [],
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        var tempChart160 = createChart(document.getElementById('tempChart160').getContext('2d'), 'Temperature', 'rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)');
+        var humdChart160 = createChart(document.getElementById('humdChart160').getContext('2d'), 'Humidity', 'rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)');
+        var tempChart176 = createChart(document.getElementById('tempChart176').getContext('2d'), 'Temperature', 'rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)');
+        var humdChart176 = createChart(document.getElementById('humdChart176').getContext('2d'), 'Humidity', 'rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)');
+        var tempChart192 = createChart(document.getElementById('tempChart192').getContext('2d'), 'Temperature', 'rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)');
+        var humdChart192 = createChart(document.getElementById('humdChart192').getContext('2d'), 'Humidity', 'rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)');
+
+        function addDataToChart(chart, label, data) {
+            chart.data.labels.push(label);
+            chart.data.datasets[0].data.push(data);
+
+            if (chart.data.labels.length > 5) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+
+            chart.update();
+        }
+    </script>
+</body>
+</html>
+

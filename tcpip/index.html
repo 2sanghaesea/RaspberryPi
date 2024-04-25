@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STM32 Data Display</title>
+</head>
+<body>
+    <h1>Received Data from STM32</h1>
+    <ul>
+        {% for item in data %}
+            <li>{{ item.timestamp }} - {{ item.data }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+

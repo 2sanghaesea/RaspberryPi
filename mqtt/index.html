@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실시간 모니터링</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #messages_list, #results_list {
+            max-height: 200px; /* 최대 높이 지정 */
+            overflow-y: scroll; /* 세로 스크롤 생성 */
+        }
+    </style>
+</head>
+<body>
+    <h1>실시간 모니터링 demo</h1>
+
+    <div id="mqtt_messages">
+        <h2>MQTT Messages (Mariadb에서 읽어옴)</h2>
+        <ul id="messages_list"></ul>
+    </div>
+
+    <div id="search">
+        <h2>검색</h2>
+        <input type="text" id="search_input" placeholder="Enter keyword">
+        <button onclick="searchMessages()">Search</button>
+    </div>
+
+    <div id="search_results">
+        <h2>Search Results</h2>
+        <ul id="results_list"></ul>
+    </div>
+
+    <script>
+        function updateMessages(messages) {
+            $('#messages_list').empty();
+            messages.forEach(function(msg) {
+                $('#messages_list').append('<li>' + msg.timestamp + ': ' + msg.message + '</li>');
+            });
+        }
+
+        function updateResults(results) {
+            $('#results_list').empty();
+            results.forEach(function(result) {
+                $('#results_list').append('<li>' + result.time + ': ' + result.data + '</li>');
+            });
+        }
+
+        function searchMessages() {
+            var keyword = $('#search_input').val();
+            $.ajax({
+                url: '/search_messages',
+                type: 'GET',
+                data: { keyword: keyword },
+                success: function(response) {
+                    updateResults(response.results);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            function getMessages() {
+                $.ajax({
+                    url: '/get_mqtt_messages',
+                    type: 'GET',
+                    success: function(response) {
+                        updateMessages(response.messages);
+                    },
+                    complete: function() {
+                        setTimeout(getMessages, 1000);
+                    }
+                });
+            }
+
+            getMessages();
+        });
+    </script>
+</body>
+</html>
+
